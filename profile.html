@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Profile - Delicious Bites</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #fffbe7 0%, #ffe0e0 100%);
+            margin: 0;
+            padding: 0;
+            color: #232526;
+        }
+        .profile-container {
+            max-width: 420px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 2px 16px #ffcc0033;
+            padding: 32px 28px 24px 28px;
+            text-align: center;
+        }
+        .profile-container h2 {
+            color: #ff6600;
+            margin-bottom: 18px;
+        }
+        .profile-container label {
+            display: block;
+            text-align: left;
+            margin: 12px 0 4px 2px;
+            font-weight: bold;
+            color: #444;
+        }
+        .profile-container input, .profile-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1.5px solid #ffcc00;
+            font-size: 1em;
+            background: #fffbe7;
+        }
+        .profile-container button {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+            color: #232526;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 28px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .profile-container button:hover {
+            background: #ff6600;
+            color: #fff;
+        }
+        .profile-success {
+            color: #2ecc71;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .profile-error {
+            color: #ff6b6b;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Your Profile</h2>
+        <form id="profileForm">
+            <label for="fullname">Full Name</label>
+            <input type="text" id="fullname" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" required pattern="[0-9]{10,}">
+
+            <label for="address">Address</label>
+            <textarea id="address" rows="3" required></textarea>
+
+            <button type="submit">Save Profile</button>
+        </form>
+        <div id="profileMsg"></div>
+    </div>
+    <script>
+        // Get current logged-in user from sessionStorage (set on login)
+        let currentUser = sessionStorage.getItem('currentUser');
+        if (!currentUser) {
+            // Not logged in, redirect to login
+            window.location.href = "login.html";
+        }
+
+        // Load user profiles from localStorage
+        let profiles = JSON.parse(localStorage.getItem('profiles') || '{}');
+        let userProfile = profiles[currentUser] || {};
+
+        // Fill form if data exists
+        document.getElementById('fullname').value = userProfile.fullname || '';
+        document.getElementById('email').value = userProfile.email || '';
+        document.getElementById('phone').value = userProfile.phone || '';
+        document.getElementById('address').value = userProfile.address || '';
+
+        // Save profile
+        document.getElementById('profileForm').onsubmit = function(e) {
+            e.preventDefault();
+            let fullname = document.getElementById('fullname').value.trim();
+
+            let email = document.getElementById('email').value.trim();
+            let phone = document.getElementById('phone').value.trim();
+            let address = document.getElementById('address').value.trim();
+            let msgDiv = document.getElementById('profileMsg');
+            if (!fullname || !email || !phone || !address) {
+                msgDiv.innerHTML = "<div class='profile-error'>Please fill all fields.</div>";
+                return;
+            }
+
+            // Save/update profile for this user
+            profiles[currentUser] = { fullname, email, phone, address };
+            localStorage.setItem('profiles', JSON.stringify(profiles));
+            msgDiv.innerHTML = "<div class='profile-success'>Profile saved!</div>";
+            setTimeout(() => msgDiv.innerHTML = '', 1500);
+        };
+
+        // After successful customer login in login.html
+        // sessionStorage.setItem('currentUser', username);
+
+        // Redirect to menu if user is found
+        if (found) {
+            sessionStorage.setItem('currentUser', username);
+            window.location.href = "menu.html";
+        }
+    </script>
+</body>
+</html>

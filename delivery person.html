@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delivery System - Delicious Bites</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add Leaflet CSS for map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #fffbe7 0%, #ffe0e0 100%);
+            margin: 0;
+            padding: 0;
+            color: #232526;
+        }
+        header {
+            background: #fff;
+            padding: 18px;
+            font-size: 1.3em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        }
+        .logo-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid #ffcc00;
+            background: #fff;
+            object-fit: cover;
+        }
+        .delivery-section {
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+        .delivery-title {
+            font-size: 2em;
+            color: #ff6600;
+            font-weight: bold;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .order-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px #ffcc0033;
+            padding: 18px 22px;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.2s;
+            position: relative;
+        }
+        .order-card .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .order-id {
+            font-weight: bold;
+            color: #ff6600;
+        }
+        .order-status {
+            font-size: 1em;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+        .order-items {
+            margin-bottom: 8px;
+        }
+        .order-actions button {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+            color: #232526;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 18px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .order-actions button:disabled {
+            background: #ccc;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .order-actions {
+            margin-top: 8px;
+        }
+        @media (max-width: 700px) {
+            .order-card { padding: 10px 6px; }
+        }
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background: #fff;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+            padding-top: 60px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #232526;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .sidebar a:hover {
+            background: #f4f4f4;
+        }
+        .sidebar img {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            position: absolute;
+            top: 18px;
+            left: 18px;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 900;
+        }
+        .order-map {
+            width: 100%;
+            height: 220px;
+            border-radius: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px #ffcc0033;
+        }
+    </style>
+</head>
+<body>
+    <header style="justify-content: space-between; position: relative;">
+        🍽 Delicious Bites Admin Dashboard
+        <button class="sidebar-toggle" id="sidebarToggle" style="position: absolute; right: -1450px; top: 16px;">&#9776;</button>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <a href="admin.html"><img src="images/admin.png" alt="Admin">Admin Panel</a>
+        <a href="billing.html"><img src="images/bill.jpg" alt="Billing">Billing</a>
+        <a href="kitchen_view.html"><img src="images/kitchen.png" alt="Kitchen">Kitchen View</a>
+        <a href="logout.html"><img src="images/logout.png" alt="Logout">Logout</a>
+        <a href="menu.html"><img src="images/menu.jpg" alt="Menu">Menu</a>
+        <a href="new_order.html"><img src="images/new order.jpg" alt="New Order">New Order</a>
+        <a href="queue.html"><img src="images/queue.png" alt="Queue">Order Queue</a>
+        <a href="reports.html"><img src="images/report.png" alt="Reports">Reports</a>
+        <a href="upload_item.html"><img src="images/upload.jpg" alt="Upload">Upload Item</a>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="delivery-section">
+        <div class="delivery-title">Live Delivery Orders</div>
+        <div class="orders-list" id="ordersList">
+            <!-- Orders will be loaded here -->
+        </div>
+    </div>
+    
+    <!-- Add Leaflet JS for map -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+    const API_KEY = "MMvGQe96yGVH3J7stfQl";
+
+    // Geocode address using Positionstack API
+    async function geocodeAddress(address) {
+        const url = `https://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${encodeURIComponent(address)}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data && data.data && data.data.length > 0) {
+                return {
+                    lat: data.data[0].latitude,
+                    lng: data.data[0].longitude
+                };
+            }
+        } catch (e) {}
+        // fallback: Chennai
+        return { lat: 13.0827, lng: 80.2707 };
+    }
+
+    // Order statuses
+    const STATUS = ["Pending", "Preparing", "Ready for Pickup", "Out for Delivery", "Delivered"];
+
+    // Get orders from localStorage (only real orders placed from billing)
+    function getOrders() {
+        let orders = JSON.parse(localStorage.getItem('liveOrders') || '[]');
+        return orders;
+    }
+
+    // Save orders to localStorage
+    function saveOrders(orders) {
+        localStorage.setItem('liveOrders', JSON.stringify(orders));
+    }
+
+    // Render only real orders (no demo/fake orders, no random lat/lng)
+    function renderOrders() {
+        const ordersList = document.getElementById('ordersList');
+        let orders = getOrders();
+        if (!orders || orders.length === 0) {
+            ordersList.innerHTML = `<div style="text-align:center;color:#888;font-size:1.2em;">No live orders yet.</div>`;
+            return;
+        }
+        ordersList.innerHTML = '';
+        orders.forEach((order, idx) => {
+            const status = STATUS[order.status] || "Unknown";
+            let itemsHtml = order.items.map(item =>
+                `<li>${item.qty} x ${item.name} <span style="color:#888;">(₹${item.price})</span></li>`
+            ).join('');
+            let actions = '';
+            if (order.status < STATUS.length - 1) {
+                actions = `<button onclick="nextStatus(${idx})">Mark as '${STATUS[order.status+1]}'</button>`;
+            }
+            if (order.status === STATUS.length - 2) {
+                actions += `<button onclick="markDelivered(${idx})">Delivered</button>`;
+            }
+
+            // Only show orders with real geocoded lat/lng (no random fallback)
+            if (order.status !== STATUS.length - 1 && order.lat && order.lng) {
+                ordersList.innerHTML += `
+                    <div class="order-card" id="orderCard${idx}">
+                        <div class="order-header">
+                            <span class="order-id">Order #${order.id}</span>
+                            <span class="order-status">${status}</span>
+                        </div>
+                        <div class="order-items">
+                            <ul style="margin:0 0 0 18px;padding:0;">${itemsHtml}</ul>
+                            ${order.address ? `<div style="margin:8px 0 0 0;"><b>Address:</b> ${order.address}</div>` : ''}
+                        </div>
+                        <div class="order-actions">${actions}</div>
+                        <div id="map${idx}" class="order-map" style="cursor:pointer;" title="Click to open in Google Maps"></div>
+                        <div style="text-align:right;margin-top:4px;">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${order.lat},${order.lng}" target="_blank" style="color:#007bff;text-decoration:underline;font-size:1em;">Open in Google Maps</a>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        // After rendering, initialize maps for each order with real lat/lng only
+        orders.forEach((order, idx) => {
+            if (order.status !== STATUS.length - 1 && order.lat && order.lng) {
+                setTimeout(() => {
+                    const mapId = `map${idx}`;
+                    const mapDiv = document.getElementById(mapId);
+                    if (mapDiv) {
+                        if (mapDiv._leaflet_id) {
+                            mapDiv._leaflet_id = null;
+                            mapDiv.innerHTML = "";
+                        }
+                        const map = L.map(mapId, {
+                            zoomControl: false,
+                            attributionControl: false,
+                            dragging: false,
+                            scrollWheelZoom: false,
+                            doubleClickZoom: false,
+                            boxZoom: false,
+                            keyboard: false,
+                            tap: false,
+                        }).setView([order.lat, order.lng], 15);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19
+                        }).addTo(map);
+                        const marker = L.marker([order.lat, order.lng]).addTo(map)
+                            .bindPopup("Delivery Destination").openPopup();
+
+                        // Click on map opens Google Maps
+                        mapDiv.onclick = function() {
+                            window.open(`https://www.google.com/maps/search/?api=1&query=${order.lat},${order.lng}`, '_blank');
+                        };
+                    }
+                }, 100);
+            }
+        });
+
+        // If no orders with real lat/lng, show empty message
+        if (ordersList.innerHTML.trim() === '') {
+            ordersList.innerHTML = `<div style="text-align:center;color:#888;font-size:1.2em;">No live orders yet.</div>`;
+        }
+    }
+
+    // Move order to next status
+    function nextStatus(idx) {
+        let orders = getOrders();
+        if (orders[idx].status < STATUS.length - 2) {
+            orders[idx].status += 1;
+            saveOrders(orders);
+            renderOrders();
+        }
+    }
+
+    // Mark order as delivered
+    function markDelivered(idx) {
+        let orders = getOrders();
+        orders[idx].status = STATUS.length - 1;
+        saveOrders(orders);
+        renderOrders();
+    }
+
+    async function payNow() {
+        let order = JSON.parse(localStorage.getItem('order') || '[]');
+        if (order.length === 0) {
+            alert("No items to order.");
+            return;
+        }
+        let address = localStorage.getItem('deliveryAddress') || "";
+        if (!address) {
+            alert("No delivery address found!");
+            return;
+        }
+        // Geocode address
+        const coords = await geocodeAddress(address);
+
+        // Add order to liveOrders for kitchen view and delivery
+        let liveOrders = JSON.parse(localStorage.getItem('liveOrders') || '[]');
+        liveOrders.push({
+            id: Math.floor(Math.random()*100000),
+            status: 0,
+            time: new Date().toLocaleString(),
+            items: order,
+            address: address,
+            lat: coords.lat,
+            lng: coords.lng
+        });
+        localStorage.setItem('liveOrders', JSON.stringify(liveOrders));
+        alert('Payment Successful! Thank you for your order.');
+        localStorage.removeItem('order');
+        window.location = 'index.html';
+    }
+
+    // Real-time updates
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'liveOrders') {
+            renderOrders();
+        }
+    });
+
+    setInterval(renderOrders, 2000);
+    renderOrders();
+
+    // Sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        sidebar.style.transform = 'translateX(0)';
+        overlay.style.display = 'block';
+    });
+    overlay.addEventListener('click', function() {
+        sidebar.style.transform = 'translateX(-100%)';
+        overlay.style.display = 'none';
+    });
+    </script>
+</body>
+</html>

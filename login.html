@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Delicious Bites</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .bg-video {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.7) blur(2px);
+            pointer-events: none;
+        }
+        .login-container {
+            background: rgba(255,255,255,0.95);
+            padding: 48px 34px 38px 34px;
+            border-radius: 22px;
+            box-shadow: 0 8px 32px 0 rgba(255,107,107,0.18), 0 2px 8px rgba(0,0,0,0.10);
+            width: 100%;
+            max-width: 410px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1.1s;
+            z-index: 2;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .login-container::before {
+            content: "";
+            position: absolute;
+            top: -60px; left: -60px;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, #ffcc00 0%, #ff6b6b 80%, transparent 100%);
+            opacity: 0.18;
+            z-index: 0;
+            border-radius: 50%;
+            animation: float1 6s ease-in-out infinite alternate;
+        }
+        .login-container::after {
+            content: "";
+            position: absolute;
+            bottom: -60px; right: -60px;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, #ff6b6b 0%, #ffcc00 80%, transparent 100%);
+            opacity: 0.18;
+            z-index: 0;
+            border-radius: 50%;
+            animation: float2 7s ease-in-out infinite alternate;
+        }
+        @keyframes float1 {
+            0% { transform: translateY(0) scale(1);}
+            100% { transform: translateY(20px) scale(1.08);}
+        }
+        @keyframes float2 {
+            0% { transform: translateY(0) scale(1);}
+            100% { transform: translateY(-20px) scale(1.05);}
+        }
+        .login-container h1 {
+            color: #ff6600;
+            margin-bottom: 28px;
+            font-size: 2.2em;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 90%;
+            padding: 15px;
+            margin: 12px 0;
+            border: 1.5px solid #ffcc00;
+            border-radius: 12px;
+            font-size: 1.08em;
+            background: rgba(255,255,255,0.85);
+            transition: border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(255,204,0,0.06);
+            outline: none;
+            position: relative;
+            z-index: 1;
+        }
+        .login-container input[type="text"]:focus,
+        .login-container input[type="password"]:focus {
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 0 0 2px #ffcc0033;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #ff6600 0%, #ffcc00 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15em;
+            font-weight: bold;
+            margin-top: 18px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 16px rgba(255,107,107,0.12);
+            position: relative;
+            z-index: 1;
+        }
+        .login-container button:hover {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6600 100%);
+            color: #232526;
+            transform: scale(1.04);
+        }
+        .login-container .links {
+            margin-top: 18px;
+            position: relative;
+            z-index: 1;
+        }
+        .login-container .links a {
+            color: #ff6600;
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 1em;
+            transition: color 0.2s;
+        }
+        .login-container .links a:hover {
+            color: #ffcc00;
+            text-decoration: underline;
+        }
+        .login-container img {
+            width: 74px;
+            margin-bottom: 18px;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            animation: popIn 1.2s cubic-bezier(.68,-0.55,.27,1.55);
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.7) rotate(-10deg);}
+            60% { transform: scale(1.1) rotate(8deg);}
+            100% { transform: scale(1) rotate(0);}
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 28px 8vw 22px 8vw;
+                max-width: 98vw;
+            }
+            .login-container h1 { font-size: 1.3em; }
+        }
+            /* Add this for modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(30,30,40,0.18);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 32px 24px 24px 24px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(255,107,107,0.18), 0 2px 8px rgba(0,0,0,0.10);
+            width: 95vw;
+            max-width: 370px;
+            text-align: center;
+            position: relative;
+            animation: fadeInUp 0.7s;
+        }
+        .modal-content input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1.5px solid #ffcc00;
+            border-radius: 10px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.85);
+        }
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #ff6600 0%, #ffcc00 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.08em;
+            font-weight: bold;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .modal-content button:hover {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6600 100%);
+            color: #232526;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px; right: 16px;
+            font-size: 1.4em;
+            color: #ff6600;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .signup-success {
+            color: #2ecc71;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .signup-error {
+            color: #ff6b6b;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background video (replace src with your own video if needed) -->
+    <video class="bg-video" autoplay muted loop playsinline>
+        <source src="images/promo video.mp4" type="video/mp4">
+        <!-- fallback background if video not supported -->
+    </video>
+    <div class="login-container">
+        <img src="images/login.jpg" alt="Login Icon">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required><br>
+            <input type="password" id="password" placeholder="Password" required><br>
+            <button type="submit">Login</button>
+        </form>
+        <div class="links">
+            <a href="#" id="openSignup">Sign Up</a>
+            <a href="#">Forgot Password?</a> 
+            <a href="index.html"></a>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeSignup">&times;</button>
+            <h2 style="color:#ff6600;">Sign Up</h2>
+            <form id="signupForm">
+                <input type="text" id="signupUsername" placeholder="Choose Username" required><br>
+                <input type="password" id="signupPassword" placeholder="Choose Password" required><br>
+                <button type="submit">Create Account</button>
+            </form>
+            <div id="signupMsg"></div>
+        </div>
+    </div>
+
+    <script>
+        // Login logic
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            // Built-in admin/delivery
+            if (password === "admin123") {
+                window.location.href = "admin.html";
+                return;
+            } else if (password === "delivery123") {
+                window.location.href = "delivery person.html";
+                return;
+            }
+
+            // Check customer users in localStorage
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            let found = users.find(u => u.username === username && u.password === password);
+            if (found) {
+                // You can redirect to a customer page or menu
+                window.location.href = "index.html";
+            } else {
+                alert("Invalid username or password!");
+            }
+        };
+
+        // Signup modal logic
+        const signupModal = document.getElementById('signupModal');
+        document.getElementById('openSignup').onclick = function(e) {
+            e.preventDefault();
+            signupModal.style.display = 'flex';
+        };
+        document.getElementById('closeSignup').onclick = function() {
+            signupModal.style.display = 'none';
+            document.getElementById('signupMsg').innerHTML = '';
+            document.getElementById('signupForm').reset();
+        };
+        window.onclick = function(event) {
+            if (event.target === signupModal) {
+                signupModal.style.display = 'none';
+                document.getElementById('signupMsg').innerHTML = '';
+                document.getElementById('signupForm').reset();
+            }
+        };
+
+        // Signup logic
+        document.getElementById('signupForm').onsubmit = function(e) {
+            e.preventDefault();
+            const username = document.getElementById('signupUsername').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            let msgDiv = document.getElementById('signupMsg');
+
+            if (!username || !password) {
+                msgDiv.innerHTML = "<div class='signup-error'>Please fill all fields.</div>";
+                return;
+            }
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (users.find(u => u.username === username)) {
+                msgDiv.innerHTML = "<div class='signup-error'>Username already exists.</div>";
+                return;
+            }
+            users.push({username, password});
+            localStorage.setItem('users', JSON.stringify(users));
+            msgDiv.innerHTML = "<div class='signup-success'>Account created! You can now login.</div>";
+            setTimeout(() => {
+                signupModal.style.display = 'none';
+                msgDiv.innerHTML = '';
+                document.getElementById('signupForm').reset();
+            }, 1200);
+        };
+    </script>
+</body>
+</html>

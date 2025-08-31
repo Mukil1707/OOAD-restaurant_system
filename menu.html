@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu - Delicious Bites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            color: #fff;
+            background: linear-gradient(120deg, #cdcfcf 0%, #000000 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        header {
+            background: rgba(0,0,0,0.7);
+            padding: 20px 70px 20px 20px;
+            font-size: 2em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1101;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            text-align: left;
+        }
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 22px;
+            font-size: 2.2em;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: #ffcc00;
+            cursor: pointer;
+            z-index: 1202;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle:hover {
+            background: #ffcc00;
+            color: #232526;
+            transform: scale(1.08) rotate(-12deg);
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -290px;
+            width: 270px;
+            height: 100%;
+            background: rgba(30,30,40,0.92);
+            backdrop-filter: blur(14px);
+            box-shadow: -4px 0 32px rgba(0,0,0,0.25);
+            padding-top: 70px;
+            transition: right 0.4s cubic-bezier(.77,0,.18,1);
+            z-index: 1201;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 18px 32px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.18em;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar a:hover {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+            color: #232526;
+            transform: translateX(-8px) scale(1.04);
+        }
+        .sidebar img {
+            width: 32px;
+            height: 32px;
+            margin-right: 18px;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            transition: transform 0.3s;
+        }
+        .sidebar a:hover img {
+            transform: rotate(12deg) scale(1.15);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30,30,40,0.25);
+            backdrop-filter: blur(2px);
+            z-index: 1200;
+            transition: opacity 0.3s;
+        }
+        .overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 40px;
+            color: #ffcc00;
+            letter-spacing: 2px;
+            font-size: 2.5em;
+            text-shadow: 0 2px 8px #0008;
+        }
+        #menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 30px auto 0 auto;
+            max-width: 1200px;
+            gap: 24px;
+        }
+        .menu-item {
+            border: 1px solid #ffcc00;
+            border-radius: 16px;
+            margin: 10px;
+            padding: 18px 10px 18px 10px;
+            display: inline-block;
+            width: 220px;
+            background: rgba(255,255,255,0.10);
+            vertical-align: top;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeInUp 0.8s;
+        }
+        .menu-item:hover {
+            transform: scale(1.04) translateY(-6px);
+            box-shadow: 0 8px 32px #ffcc0033;
+            background: rgba(255,255,255,0.18);
+        }
+        .menu-item img {
+            width: 180px;
+            height: 120px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0004;
+            margin-bottom: 8px;
+        }
+        .qty {
+            width: 40px;
+            border-radius: 6px;
+            border: 1px solid #ffcc00;
+            padding: 4px;
+            font-size: 1em;
+            text-align: center;
+        }
+        .btn {
+            margin: 30px auto 40px auto;
+            padding: 14px 40px;
+            background: linear-gradient(45deg, #28a745, #ffcc00);
+            color: #232526;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.3em;
+            font-weight: bold;
+            display: block;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 4px 16px rgba(40,167,69,0.15);
+        }
+        .btn:hover {
+            background: linear-gradient(45deg, #ffcc00, #28a745);
+            color: #232526;
+            transform: scale(1.05);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        @media (max-width: 900px) {
+            #menu { max-width: 98vw; }
+            .menu-item { width: 90vw; }
+            header { font-size: 1.2em; padding-right: 60px; }
+            .sidebar { width: 80vw; min-width: 180px; border-radius: 20px 0 0 20px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Menu - Delicious Bites
+        <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+    </header>
+
+   <div class="sidebar" id="sidebar">
+    <a href="billing.html"><img src="images/bill.jpg" alt="Billing">Billing</a>
+    <a href="logout.html"><img src="images/logout.png" alt="Logout">Logout</a>
+    <a href="menu.html"><img src="images/menu.jpg" alt="Menu">Menu</a>
+</div>
+    <div class="overlay" id="overlay"></div>
+
+    <h1>Select Your Dishes</h1>
+    <div style="text-align:center; margin-bottom: 18px;">
+        <label for="sortMenu" style="color:#ffcc00;font-size:1.1em;font-weight:bold;">Sort by:</label>
+        <select id="sortMenu" style="padding:6px 14px; border-radius:6px; border:1px solid #ffcc00; font-size:1em;">
+            <option value="default">Default</option>
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="price-asc">Price (Low to High)</option>
+            <option value="price-desc">Price (High to Low)</option>
+        </select>
+    </div>
+    <div id="menu">
+        <!-- Pizza -->
+        <div class="menu-item">
+            <img src="images/PIZZA-MARGHERITA.jpg" alt="Margherita Pizza"><br>
+            <b>Margherita Pizza</b><br>
+            ₹299<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/pepperoni-pizza.webp" alt="Pepperoni Pizza"><br>
+            <b>Pepperoni Pizza</b><br>
+            ₹349<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/veg pizza.avif" alt="Veggie Supreme Pizza"><br>
+            <b>Veggie Supreme Pizza</b><br>
+            ₹329<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/BBQ Chicken Pizza.jpg" alt="BBQ Chicken Pizza"><br>
+            <b>BBQ Chicken Pizza</b><br>
+            ₹379<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Burgers & Sandwiches -->
+        <div class="menu-item">
+            <img src="images/Classic Burger.avif" alt="Classic Cheeseburger"><br>
+            <b>Classic Cheeseburger</b><br>
+            ₹249<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Grilled Chicken Burger.jpg" alt="Grilled Chicken Burger"><br>
+            <b>Grilled Chicken Burger</b><br>
+            ₹269<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Double Beef Burger.jpg" alt="Double Beef Burger"><br>
+            <b>Double Beef Burger</b><br>
+            ₹299<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Club Sandwich.jpg" alt="Club Sandwich"><br>
+            <b>Club Sandwich</b><br>
+            ₹199<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Pasta & Noodles -->
+        <div class="menu-item">
+            <img src="images/masala pasta.jpg" alt="Masala Pasta"><br>
+            <b>Masala Pasta</b><br>
+            ₹99<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Red Sauce Paste.jpg" alt="Red Sauce Pasta"><br>
+            <b>Red Sauce Pasta</b><br>
+            ₹119<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Schezwan Noodles.jpg" alt="Schezwan Noodles"><br>
+            <b>Schezwan Noodles</b><br>
+            ₹159<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Garlic Hakka Noodles.jpg" alt="Garlic Hakka Noodles"><br>
+            <b>Garlic Hakka Noodles</b><br>
+            ₹179<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Indian Mains -->
+        <div class="menu-item">
+            <img src="images/Paneer Butter Masala.jpg" alt="Paneer Butter Masala"><br>
+            <b>Paneer Butter Masala</b><br>
+            ₹199<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Chicken Biryani.jpg" alt="Chicken Biryani"><br>
+            <b>Chicken Biryani</b><br>
+            ₹159<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/MUtton Biryani.jpg" alt="Mutton Biryani"><br>
+            <b>Mutton Biryani</b><br>
+            ₹259<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Non-Veg Meals.jpg" alt="Non-Veg Meals"><br>
+            <b>Non-Veg Meals</b><br>
+            ₹199<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Asian Delights -->
+        <div class="menu-item">
+            <img src="images/Chettinad Chicken.jpeg" alt="Chettinad Chicken"><br>
+            <b>Chettinad Chicken</b><br>
+            ₹299<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Veg Spring Rolls.jpg" alt="Veg Spring Rolls"><br>
+            <b>Veg Spring Rolls</b><br>
+            ₹149<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Chicken Dumplings.webp" alt="Chicken Dumplings"><br>
+            <b>Chicken Dumplings</b><br>
+            ₹199<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Thai Green Curry.jpg" alt="Thai Green Curry"><br>
+            <b>Thai Green Curry</b><br>
+            ₹279<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Salads -->
+        <div class="menu-item">
+            <img src="images/Caesar Salad.jpeg" alt="Caesar Salad"><br>
+            <b>Caesar Salad</b><br>
+            ₹149<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/avocado-salad.jpg" alt="Avocado Salad"><br>
+            <b>Avocado Salad</b><br>
+            ₹189<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Greek Salad.webp" alt="Greek Salad"><br>
+            <b>Greek Salad</b><br>
+            ₹169<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Desserts -->
+        <div class="menu-item">
+            <img src="images/Chocolate Brownie.jpg" alt="Chocolate Brownie"><br>
+            <b>Chocolate Brownie</b><br>
+            ₹129<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Gulab Jamun.jpg" alt="Gulab Jamun"><br>
+            <b>Gulab Jamun</b><br>
+            ₹99<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Strawberry Cheesecake.jpg" alt="Strawberry Cheesecake"><br>
+            <b>Strawberry Cheesecake</b><br>
+            ₹159<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Rasmalai.png" alt="Rasmalai"><br>
+            <b>Rasmalai</b><br>
+            ₹159<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Beverages -->
+        <div class="menu-item">
+            <img src="images/Cold Coffee.jpeg" alt="Cold Coffee"><br>
+            <b>Cold Coffee</b><br>
+            ₹89<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Mango Smoothie.jpg" alt="Mango Smoothie"><br>
+            <b>Mango Smoothie</b><br>
+            ₹99<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Lemon Iced Tea.jpg" alt="Lemon Iced Tea"><br>
+            <b>Lemon Iced Tea</b><br>
+            ₹79<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Fresh Lime Soda.jpg" alt="Fresh Lime Soda"><br>
+            <b>Fresh Lime Soda</b><br>
+            ₹59<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Wraps & Rolls -->
+        <div class="menu-item">
+            <img src="images/Paneer Tikka Wrap.jpeg " alt="Paneer Tikka Wrap"><br>
+            <b>Paneer Tikka Wrap</b><br>
+            ₹169<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Chicken Shawarma Roll.jpg" alt="Chicken Shawarma Roll"><br>
+            <b>Chicken Shawarma Roll</b><br>
+            ₹199<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Parotta and Salna.webp" alt="Parotta and Salna"><br>
+            <b>Parotta and Salna</b><br>
+            ₹149<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Vegan Options -->
+        <div class="menu-item">
+            <img src="images/Veg Meals.avif" alt="Veg Meals"><br>
+            <b>Veg Meals</b><br>
+            ₹149<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Veg Biryani.jpg" alt="Veg Biryani"><br>
+            <b>Veg Biryani</b><br>
+            ₹129<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Vegan Fried Rice.jpg" alt="Vegan Fried Rice"><br>
+            <b>Vegan Fried Rice</b><br>
+            ₹99<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Breakfast -->
+        <div class="menu-item">
+            <img src="images/Masala Dosa.jpg" alt="Masala Dosa"><br>
+            <b>Masala Dosa</b><br>
+            ₹150<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Pongal Sambar.jpg" alt="Pongal Sambar"><br>
+            <b>Pongal Sambar</b><br>
+            ₹120<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Idly.jpg" alt="Idly"><br>
+            <b>Idly</b><br>
+            ₹90<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Puri.png" alt="Puri"><br>
+            <b>Puri</b><br>
+            ₹99<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <!-- Bonus -->
+        <div class="menu-item">
+            <img src="images/Butter Garlic Naan.jpg" alt="Butter Garlic Naan"><br>
+            <b>Butter Garlic Naan</b><br>
+            ₹49<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+        <div class="menu-item">
+            <img src="images/Chicken Tikka.jpg" alt="Chicken Tikka"><br>
+            <b>Chicken Tikka</b><br>
+            ₹249<br>
+            Qty: <input type="number" class="qty" min="0" value="0">
+        </div>
+    </div>
+    <button class="btn" onclick="placeOrder()">Place Order</button>
+    <script>
+    // Sidebar logic
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+    });
+
+    // --- Dynamic Menu Items from Upload (Real-time) ---
+    function renderUploadedMenuItems() {
+        // Remove previously rendered uploaded items
+        document.querySelectorAll('.menu-item.uploaded').forEach(e => e.remove());
+        // Get uploaded items from localStorage
+        let items = [];
+        try {
+            items = JSON.parse(localStorage.getItem('menuItems') || '[]');
+        } catch {}
+        if (!Array.isArray(items)) items = [];
+        // Render each uploaded item
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'menu-item uploaded';
+            div.innerHTML = `
+                <img src="${item.image}" alt="${item.name}"><br>
+                <b>${item.name}</b><br>
+                ₹${item.price}<br>
+                Qty: <input type="number" class="qty" min="0" value="0">
+            `;
+            document.getElementById('menu').appendChild(div);
+        });
+    }
+
+    // Initial render
+    renderUploadedMenuItems();
+
+    // Real-time update: Listen for uploads from other tabs/windows
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'menuItems_update' || e.key === 'menuItems') {
+            renderUploadedMenuItems();
+        }
+    });
+
+    // Sort Menu logic
+    const sortMenu = document.getElementById('sortMenu');
+    const menuDiv = document.getElementById('menu');
+    const originalMenuHTML = menuDiv.innerHTML;
+
+    sortMenu.addEventListener('change', function() {
+        let items = Array.from(menuDiv.querySelectorAll('.menu-item:not(.uploaded)'));
+        let uploadedItems = Array.from(menuDiv.querySelectorAll('.menu-item.uploaded'));
+        if (this.value === 'default') {
+            menuDiv.innerHTML = originalMenuHTML;
+            renderUploadedMenuItems();
+            return;
+        }
+        items.sort((a, b) => {
+            const nameA = a.querySelector('b').innerText.toUpperCase();
+            const nameB = b.querySelector('b').innerText.toUpperCase();
+            const priceA = parseInt(Array.from(a.childNodes).find(n => n.nodeType === 3 && n.textContent.trim().startsWith('₹')).textContent.replace('₹','').trim());
+            const priceB = parseInt(Array.from(b.childNodes).find(n => n.nodeType === 3 && n.textContent.trim().startsWith('₹')).textContent.replace('₹','').trim());
+            if (this.value === 'name-asc') return nameA.localeCompare(nameB);
+            if (this.value === 'name-desc') return nameB.localeCompare(nameA);
+            if (this.value === 'price-asc') return priceA - priceB;
+            if (this.value === 'price-desc') return priceB - priceA;
+            return 0;
+        });
+        menuDiv.innerHTML = '';
+        items.forEach(item => menuDiv.appendChild(item));
+        uploadedItems.forEach(item => menuDiv.appendChild(item));
+    });
+
+    // Place Order logic for static HTML menu
+    function placeOrder() {
+        const menuItems = document.querySelectorAll('#menu .menu-item');
+        let order = [];
+        menuItems.forEach(item => {
+            const name = item.querySelector('b').innerText;
+            // Get price from the text node (₹299)
+            const priceText = Array.from(item.childNodes)
+                .find(n => n.nodeType === 3 && n.textContent.trim().startsWith('₹'));
+            const price = priceText ? parseInt(priceText.textContent.replace('₹','').trim()) : 0;
+            const imgTag = item.querySelector('img');
+            const img = imgTag ? imgTag.outerHTML : '';
+            const qtyInput = item.querySelector('.qty');
+            const qty = parseInt(qtyInput.value);
+            if(qty > 0) {
+                order.push({name, price, img, qty});
+            }
+        });
+        if(order.length === 0) {
+            alert("Please select at least one dish!");
+            return;
+        }
+        localStorage.setItem('order', JSON.stringify(order));
+        window.location = "cart.html";
+    }
+    </script>
+</body>
+</html>

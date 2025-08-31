@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Menu Item</title>
+    <style>
+        body {
+            background: linear-gradient(120deg, #cdcfcf 0%, #000000 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            color: #fff;
+            min-height: 100vh;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        header {
+            background: rgba(0,0,0,0.7);
+            padding: 24px 70px 24px 20px;
+            color: #ffcc00;
+            font-size: 2.2em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-align: left;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            position: relative;
+            z-index: 1101;
+        }
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 28px;
+            font-size: 2.2em;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: #ffcc00;
+            cursor: pointer;
+            z-index: 1202;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle:hover {
+            background: #ffcc00;
+            color: #232526;
+            transform: scale(1.08) rotate(-12deg);
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -290px;
+            width: 270px;
+            height: 100%;
+            background: rgba(30,30,40,0.92);
+            backdrop-filter: blur(14px);
+            box-shadow: -4px 0 32px rgba(0,0,0,0.25);
+            padding-top: 70px;
+            transition: right 0.4s cubic-bezier(.77,0,.18,1);
+            z-index: 1201;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 18px 32px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.18em;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar a:hover {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+            color: #232526;
+            transform: translateX(-8px) scale(1.04);
+        }
+        .sidebar img {
+            width: 32px;
+            height: 32px;
+            margin-right: 18px;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            transition: transform 0.3s;
+        }
+        .sidebar a:hover img {
+            transform: rotate(12deg) scale(1.15);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30,30,40,0.25);
+            backdrop-filter: blur(2px);
+            z-index: 1200;
+            transition: opacity 0.3s;
+        }
+        .overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        h1 {
+            color: #ffcc00;
+            font-size: 40px;
+            margin-top: 40px;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px #0008;
+        }
+        .upload-container {
+            margin: 40px auto 0 auto;
+            max-width: 420px;
+            background: rgba(255,255,255,0.13);
+            padding: 35px 30px 30px 30px;
+            border-radius: 18px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+            animation: fadeInUp 0.8s;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input, select {
+            padding: 15px;
+            margin: 10px 0;
+            width: 90%;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.12);
+        }
+        button {
+            background: linear-gradient(45deg, #ff6f61, #ffcc00);
+            color: #232526;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: 18px;
+            font-weight: bold;
+            transition: background 0.3s, color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 16px rgba(255,107,107,0.15);
+        }
+        button:hover {
+            background: linear-gradient(45deg, #ffcc00, #ff6f61);
+            color: #232526;
+            transform: scale(1.05);
+        }
+        .msg {
+            color: #00ff99;
+            font-size: 18px;
+            margin: 15px 0;
+        }
+        @media (max-width: 700px) {
+            .upload-container { max-width: 98vw; padding: 10px; }
+            header { font-size: 1.2em; padding-right: 60px; }
+            .sidebar { width: 80vw; min-width: 180px; border-radius: 20px 0 0 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    Upload Menu Item
+    <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+</header>
+
+<div class="sidebar" id="sidebar">
+    <a href="admin.html"><img src="images/admin.png" alt="Admin">Admin Panel</a>
+    <a href="billing.html"><img src="images/bill.jpg" alt="Billing">Billing</a>
+    <a href="kitchen_view.html"><img src="images/kitchen.png" alt="Kitchen">Kitchen View</a>
+    <a href="logout.html"><img src="images/logout.png" alt="Logout">Logout</a>
+    <a href="menu.html"><img src="images/menu.jpg" alt="Menu">Menu</a>
+    <a href="new_order.html"><img src="images/new order.jpg" alt="New Order">New Order</a>
+    <a href="queue.html"><img src="images/queue.png" alt="Queue">Order Queue</a>
+    <a href="reports.html"><img src="images/report.png" alt="Reports">Reports</a>
+    <a href="upload_item.html"><img src="images/upload.jpg" alt="Upload">Upload Item</a>
+</div>
+<div class="overlay" id="overlay"></div>
+
+
+
+<div class="upload-container">
+    <!-- Message placeholder (static HTML, no PHP) -->
+    <!-- <p class='msg'>Item uploaded successfully!</p> -->
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="text" name="item_name" placeholder="Item Name" required><br>
+        <input type="number" name="item_price" placeholder="Item Price" step="0.01" required><br>
+        <select name="category" required>
+            <option value="">Select Category</option>
+            <option value="Pizza">Pizza</option>
+            <option value="Burger">Burger</option>
+            <option value="Drinks">Drinks</option>
+        </select><br>
+        <input type="file" name="item_image" accept="image/*" required><br>
+        <button type="submit">Upload Item</button>
+    </form>
+</div>
+
+<script>
+    // Sidebar logic
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+    });
+
+    // Real-time simulation: Broadcast changes using localStorage events
+    function broadcastMenuUpdate() {
+        // This will trigger a 'storage' event in other tabs/windows
+        localStorage.setItem('menuItems_update', Date.now());
+    }
+
+    // Upload logic: Save item to localStorage and show message
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = this.item_name.value.trim();
+        const price = parseFloat(this.item_price.value);
+        const category = this.category.value;
+        const fileInput = this.item_image;
+        if (!name || !price || !category || !fileInput.files[0]) return;
+
+        // Read image as DataURL
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const imageData = evt.target.result;
+            // Get existing items or empty array
+            let items = JSON.parse(localStorage.getItem('menuItems') || '[]');
+            // Add new item
+            items.push({
+                name,
+                price,
+                category,
+                image: imageData
+            });
+            localStorage.setItem('menuItems', JSON.stringify(items));
+            broadcastMenuUpdate(); // Notify other tabs/windows
+            // Show success message
+            let msg = document.createElement('p');
+            msg.className = 'msg';
+            msg.innerText = "Item uploaded successfully!";
+            document.querySelector('.upload-container').appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
+            // Reset form
+            e.target.reset();
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    });
+</script>
+
+</body>
+</html>

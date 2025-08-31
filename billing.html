@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billing - Delicious Bites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            color: white;
+            /* Unique animated background */
+            background: linear-gradient(120deg, #cdcfcf 0%, #000000 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        header {
+            background: rgba(0,0,0,0.7);
+            padding: 20px 70px 20px 20px;
+            font-size: 2em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1101;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            text-align: left;
+        }
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 22px;
+            font-size: 2.2em;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: #ffcc00;
+            cursor: pointer;
+            z-index: 1202;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle:hover {
+            background: #ffcc00;
+            color: #232526;
+            transform: scale(1.08) rotate(-12deg);
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -290px;
+            width: 270px;
+            height: 100%;
+            background: rgba(30,30,40,0.92);
+            backdrop-filter: blur(14px);
+            box-shadow: -4px 0 32px rgba(0,0,0,0.25);
+            padding-top: 70px;
+            transition: right 0.4s cubic-bezier(.77,0,.18,1);
+            z-index: 1201;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 18px 32px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.18em;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar a:hover {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+            color: #232526;
+            transform: translateX(-8px) scale(1.04);
+        }
+        .sidebar img {
+            width: 32px;
+            height: 32px;
+            margin-right: 18px;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            transition: transform 0.3s;
+        }
+        .sidebar a:hover img {
+            transform: rotate(12deg) scale(1.15);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30,30,40,0.25);
+            backdrop-filter: blur(2px);
+            z-index: 1200;
+            transition: opacity 0.3s;
+        }
+        .overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        .container {
+            background-color: rgba(0,0,0,0.7);
+            width: 50%;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            animation: fadeInUp 1s;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        h1 {
+            text-align: center;
+            color: #ffcc00;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #ff6600;
+            color: white;
+        }
+        .total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff99;
+        }
+        .btn {
+            background-color: #28a745;
+            color: white;
+            padding: 18px 40px;
+            font-size: 22px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            width: 80%;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 4px 16px rgba(40,167,69,0.15);
+        }
+        .btn:hover {
+            background-color: #218838;
+            transform: scale(1.04);
+        }
+        .cancel {
+            background-color: #dc3545;
+        }
+        .cancel:hover {
+            background-color: #c82333;
+        }
+        .nav-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            color: #ffcc00;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        #emptyMsg {
+            display: none;
+            font-size: 22px;
+            color: #ffcc00;
+            text-align: center;
+            margin: 30px 0;
+        }
+        @media (max-width: 900px) {
+            .container {
+                width: 90%;
+                padding: 10px;
+            }
+            header {
+                font-size: 1.2em;
+                padding-right: 60px;
+            }
+            .sidebar {
+                width: 80vw;
+                min-width: 180px;
+                border-radius: 20px 0 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Billing - Delicious Bites
+        <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+    </header>
+
+   <div class="sidebar" id="sidebar">
+    <a href="billing.html"><img src="images/bill.jpg" alt="Billing">Billing</a>
+    <a href="logout.html"><img src="images/logout.png" alt="Logout">Logout</a>
+    <a href="menu.html"><img src="images/menu.jpg" alt="Menu">Menu</a>
+</div>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="container">
+        <div class="nav-links">
+            <a href="index.html">Home</a> |
+            <a href="menu.html">Menu</a> |
+            <a href="cart.html">Cart</a>
+        </div>
+        <h1>Billing</h1>
+        <table id="billingTable">
+            <tr>
+                <th>Item</th>
+                <th>Price (₹)</th>
+                <th>Qty</th>
+                <th>Subtotal (₹)</th>
+            </tr>
+            <!-- Items will be inserted here by JavaScript -->
+        </table>
+        <div id="emptyMsg">No items to bill. Please add items from the menu.</div>
+        <form>
+            <button type="button" class="btn" id="payBtn" onclick="payNow()">Confirm Payment</button>
+            <a href="cart.html"><button type="button" class="btn cancel">Cancel</button></a>
+        </form>
+    </div>
+    <script>
+    const API_KEY = "MMvGQe96yGVH3J7stfQl";
+async function geocodeAddress(address) {
+    const url = `https://api.positionstack.com/v1/forward?access_key=${API_KEY}&query=${encodeURIComponent(address)}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data && data.data && data.data.length > 0) {
+            return {
+                lat: data.data[0].latitude,
+                lng: data.data[0].longitude
+            };
+        }
+    } catch (e) {}
+    // fallback: Chennai
+    return { lat: 13.0827, lng: 80.2707 };
+}
+
+async function payNow() {
+    let order = JSON.parse(localStorage.getItem('order') || '[]');
+    if (order.length === 0) {
+        alert("No items to order.");
+        return;
+    }
+    let address = localStorage.getItem('deliveryAddress') || "";
+    if (!address) {
+        alert("No delivery address found!");
+        return;
+    }
+    // Geocode address
+    const coords = await geocodeAddress(address);
+
+    // Add order to liveOrders for kitchen view and delivery
+    let liveOrders = JSON.parse(localStorage.getItem('liveOrders') || '[]');
+    liveOrders.push({
+        id: Math.floor(Math.random()*100000),
+        status: 0,
+        time: new Date().toLocaleString(),
+        items: order,
+        address: address,
+        lat: coords.lat,
+        lng: coords.lng
+    });
+    localStorage.setItem('liveOrders', JSON.stringify(liveOrders));
+    alert('Payment Successful! Thank you for your order.');
+    localStorage.removeItem('order');
+    window.location = 'index.html';
+}
+
+// Sidebar logic
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+});
+
+overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === "Escape") {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+    }
+});
+
+// Billing logic
+function renderBilling() {
+    let order = JSON.parse(localStorage.getItem('order') || '[]');
+    let table = document.getElementById('billingTable');
+    let emptyMsg = document.getElementById('emptyMsg');
+    let payBtn = document.getElementById('payBtn');
+    // Remove old rows except header
+    table.querySelectorAll('tr:not(:first-child)').forEach(tr => tr.remove());
+
+    if (order.length === 0) {
+        emptyMsg.style.display = 'block';
+        payBtn.disabled = true;
+        payBtn.style.opacity = 0.5;
+        return;
+    } else {
+        emptyMsg.style.display = 'none';
+        payBtn.disabled = false;
+        payBtn.style.opacity = 1;
+    }
+
+    let total = 0;
+    order.forEach(item => {
+        let subtotal = item.price * item.qty;
+        total += subtotal;
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.price.toFixed(2)}</td>
+            <td>${item.qty}</td>
+            <td>${subtotal.toFixed(2)}</td>
+        `;
+        table.appendChild(row);
+    });
+
+    let gst = total * 0.05;
+    let grandTotal = total + gst;
+
+    let totalRow = document.createElement('tr');
+    totalRow.innerHTML = `<td colspan="3" class="total">Total</td><td class="total">₹${total.toFixed(2)}</td>`;
+    table.appendChild(totalRow);
+
+    let gstRow = document.createElement('tr');
+    gstRow.innerHTML = `<td colspan="3" class="total">GST (5%)</td><td class="total">₹${gst.toFixed(2)}</td>`;
+    table.appendChild(gstRow);
+
+    let grandTotalRow = document.createElement('tr');
+    grandTotalRow.innerHTML = `<td colspan="3" class="total">Grand Total</td><td class="total">₹${grandTotal.toFixed(2)}</td>`;
+    table.appendChild(grandTotalRow);
+}
+
+renderBilling();
+    </script>
+</body>
+</html>

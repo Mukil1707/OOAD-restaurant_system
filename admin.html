@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            /* Unique animated background */
+            background: linear-gradient(120deg, #ff7e5f 0%, #feb47b 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        header {
+            background: rgba(0,0,0,0.5);
+            padding: 20px 70px 20px 20px;
+            font-size: 2em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1101;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            text-align: left;
+        }
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 22px;
+            font-size: 2.2em;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: #ffcc00;
+            cursor: pointer;
+            z-index: 1202;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle:hover {
+            background: #ffcc00;
+            color: #232526;
+            transform: scale(1.08) rotate(-12deg);
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -290px;
+            width: 270px;
+            height: 100%;
+            background: rgba(30,30,40,0.92);
+            backdrop-filter: blur(14px);
+            box-shadow: -4px 0 32px rgba(0,0,0,0.25);
+            padding-top: 70px;
+            transition: right 0.4s cubic-bezier(.77,0,.18,1);
+            z-index: 1201;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 18px 32px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.18em;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar a:hover {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff7e5f 100%);
+            color: #232526;
+            transform: translateX(-8px) scale(1.04);
+        }
+        .sidebar img {
+            width: 32px;
+            height: 32px;
+            margin-right: 18px;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            transition: transform 0.3s;
+        }
+        .sidebar a:hover img {
+            transform: rotate(12deg) scale(1.15);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30,30,40,0.25);
+            backdrop-filter: blur(2px);
+            z-index: 1200;
+            transition: opacity 0.3s;
+        }
+        .overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        .container {
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            transition: filter 0.3s;
+        }
+        .btn {
+            display: inline-block;
+            margin: 20px;
+            padding: 25px 60px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+        }
+        .btn:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.05) translateY(-4px);
+            color: #232526;
+        }
+        footer {
+            margin-top: 80px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            font-size: 0.9em;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -2px 16px rgba(0,0,0,0.12);
+        }
+        @media (max-width: 700px) {
+            .container {
+                gap: 10px;
+            }
+            .btn {
+                width: 90vw;
+                font-size: 1.1em;
+                padding: 18px 0;
+            }
+            header {
+                font-size: 1.2em;
+                padding-right: 60px;
+            }
+            .sidebar {
+                width: 80vw;
+                min-width: 180px;
+                border-radius: 20px 0 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        🍽 Delicious Bites Admin Dashboard
+        <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <a href="admin.html"><img src="images/admin.png" alt="Admin">Admin Panel</a>
+        <a href="billing.html"><img src="images/bill.jpg" alt="Billing">Billing</a>
+        <a href="kitchen_view.html"><img src="images/kitchen.png" alt="Kitchen">Kitchen View</a>
+        <a href="logout.html"><img src="images/logout.png" alt="Logout">Logout</a>
+        <a href="menu.html"><img src="images/menu.jpg" alt="Menu">Menu</a>
+        <a href="new_order.html"><img src="images/new order.jpg" alt="New Order">New Order</a>
+        <a href="queue.html"><img src="images/queue.png" alt="Queue">Order Queue</a>
+        <a href="reports.html"><img src="images/report.png" alt="Reports">Reports</a>
+        <a href="upload_item.html"><img src="images/upload.jpg" alt="Upload">Upload Item</a>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="container">
+        <a href="upload_item.html" class="btn">📤 Upload Menu Item</a>
+        <a href="reports.html" class="btn">📊 View Reports</a>
+        <a href="kitchen_view.html" class="btn">👨‍🍳 Kitchen View</a>
+        <a href="queue.html" class="btn">📦 Order Queue</a>
+        <a href="logout.html" class="btn">🚪 Logout</a>
+    </div>
+
+    <footer>© 2025 Restaurant Order System - Admin Panel</footer>
+
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape") {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

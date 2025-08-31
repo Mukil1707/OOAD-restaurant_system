@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicious Bites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: #232526;
+            background: linear-gradient(120deg, #fffbe7 0%, #ffe0e0 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        header {
+            background: #fff;
+            padding: 18px 18px 18px 18px;
+            font-size: 1.3em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid #ffcc00;
+            background: #fff;
+            object-fit: cover;
+        }
+        .header-title {
+            flex: 1;
+            color: #232526;
+        }
+        .header-icons {
+            display: flex;
+            gap: 18px;
+        }
+        .header-icons img {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            transition: transform 0.2s;
+        }
+        .header-icons img:hover {
+            transform: scale(1.12) rotate(-8deg);
+        }
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 22px;
+            font-size: 2.2em;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: #ffcc00;
+            cursor: pointer;
+            z-index: 1202;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle:hover {
+            background: #ffcc00;
+            color: #232526;
+            transform: scale(1.08) rotate(-12deg);
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -290px;
+            width: 270px;
+            height: 100%;
+            background: rgba(30,30,40,0.92);
+            backdrop-filter: blur(14px);
+            box-shadow: -4px 0 32px rgba(0,0,0,0.25);
+            padding-top: 70px;
+            transition: right 0.4s cubic-bezier(.77,0,.18,1);
+            z-index: 1201;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 18px 32px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.18em;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar a:hover {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+            color: #232526;
+            transform: translateX(-8px) scale(1.04);
+        }
+        .sidebar img {
+            width: 32px;
+            height: 32px;
+            margin-right: 18px;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            transition: transform 0.3s;
+        }
+        .sidebar a:hover img {
+            transform: rotate(12deg) scale(1.15);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30,30,40,0.25);
+            backdrop-filter: blur(2px);
+            z-index: 1200;
+            transition: opacity 0.3s;
+        }
+        .overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        .welcome-bar {
+            background: linear-gradient(90deg, #fffbe7 60%, #ffe0e0 100%);
+            padding: 18px 24px;
+            font-size: 1.1em;
+            color: #ff6600;
+            border-bottom: 1px solid #ffe0e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .welcome-bar .star {
+            color: #ffcc00;
+            font-size: 1.3em;
+        }
+        .promo-banner {
+            margin: 24px auto 0 auto;
+            max-width: 95vw;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 18px #ffcc0022;
+            padding: 22px 18px 18px 18px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s;
+        }
+        .promo-banner img {
+            width: 90px;
+            height: 90px;
+            margin-right: 10px;
+            animation: pizzaFloat 2.5s infinite alternate;
+        }
+        @keyframes pizzaFloat {
+            0% { transform: translateY(0);}
+            100% { transform: translateY(-10px);}
+        }
+        .promo-content {
+            flex: 1;
+        }
+        .promo-title {
+            font-size: 2.2em;
+            color: #2ecc71;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .promo-desc {
+            color: #232526;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+        .promo-code {
+            display: inline-block;
+            background: #e0ffe0;
+            color: #2ecc71;
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-top: 6px;
+            letter-spacing: 1px;
+        }
+        .explore-section {
+            margin: 32px auto 0 auto;
+            max-width: 98vw;
+        }
+        .explore-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 10px 12px 10px;
+        }
+        .explore-title {
+            font-size: 1.3em;
+            color: #232526;
+            font-weight: bold;
+        }
+        .explore-viewall {
+            color: #ff6600;
+            font-size: 1em;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .explore-viewall:hover {
+            color: #ffcc00;
+            text-decoration: underline;
+        }
+        .explore-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            justify-content: flex-start;
+            margin: 0 10px;
+            align-items: stretch;
+        }
+        .menu-card {
+            background: linear-gradient(90deg, #fffbe7 60%, #ffe0e0 100%);
+            border-radius: 18px;
+            width: 100%;
+            min-height: 90px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            box-shadow: 0 2px 12px #ffcc0033;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+            padding: 14px 22px;
+            animation: fadeInUp 0.8s;
+            margin: 0 auto;
+            max-width: 520px;
+        }
+        .menu-card:hover {
+            transform: scale(1.03) translateY(-4px);
+            box-shadow: 0 8px 32px #ffcc0033;
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+        }
+        .menu-card img {
+            width: 64px;
+            height: 64px;
+            margin-right: 22px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 2px 8px #ffcc0055;
+            background: #fff;
+        }
+        .menu-card span {
+            color: #232526;
+            font-size: 1.18em;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            background: #fff;
+            box-shadow: 0 -2px 16px rgba(0,0,0,0.10);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 4px 0;
+            z-index: 100;
+        }
+        .bottom-nav a {
+            flex: 1;
+            text-align: center;
+            color: #232526;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 6px 0;
+            transition: color 0.2s;
+        }
+        .bottom-nav a.active,
+        .bottom-nav a:hover {
+            color: #ff6600;
+        }
+        .bottom-nav img {
+            width: 28px;
+            height: 28px;
+            display: block;
+            margin: 0 auto 2px auto;
+        }
+        /* Sidebar Responsive */
+        @media (max-width: 700px) {
+            .promo-banner { flex-direction: column; align-items: flex-start; }
+            .promo-banner img { margin-bottom: 10px; }
+            .explore-menu { gap: 12px; }
+            .menu-card { max-width: 98vw; min-height: 70px; padding: 10px 10px; }
+            .menu-card img { width: 44px; height: 44px; margin-right: 12px; }
+            .sidebar { width: 80vw; min-width: 180px; border-radius: 20px 0 0 20px; }
+        }
+        @media (max-width: 500px) {
+            .promo-title { font-size: 1.3em; }
+            .promo-banner { padding: 12px 6px; }
+            .explore-title { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background Video -->
+<video autoplay loop muted playsinline id="bgVideo" style="
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100vw;
+    min-height: 100vh;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    object-fit: cover;
+    opacity: 0.75;
+    pointer-events: none;
+">
+    <source src="images/promo1.mp4" type="video/mp4">
+    <!-- Add a fallback message if needed -->
+    Your browser does not support the video tag.
+</video>
+
+<header>
+    <img src="images/menu.jpg" class="logo-img" alt="Logo">
+    <span class="header-title">Delicious Bites</span>
+    <div class="header-icons">
+        <img src="images/search.jpg" alt="Search" title="Search">
+        <img src="images/user.png" alt="Profile" title="Profile">
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+</header>
+
+<div class="sidebar" id="sidebar">
+    <a href="billing.html"><img src="images/bill.jpg" alt="Billing">Billing</a>
+    <a href="logout.html"><img src="images/logout.png" alt="Logout">Logout</a>
+    <a href="menu.html"><img src="images/menu.jpg" alt="Menu">Menu</a>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<div class="welcome-bar">
+    <span class="star">★</span>
+    <span>Welcome</span>
+    <span style="color:#888;font-size:0.95em;">Start Exploring Wide Range of Items</span>
+</div>
+
+<div class="promo-banner">
+    <img src="images/PIZZA-MARGHERITA.jpg" alt="Pizza Offer">
+    <div class="promo-content">
+        <div class="promo-title">Flat 50% Off</div>
+        <div class="promo-desc">Across Menu</div>
+        <div class="promo-code">Use code SUPER500</div>
+    </div>
+</div>
+
+<div class="explore-section">
+    <div class="explore-header">
+        <span class="explore-title">Explore Menu</span>
+        <a href="combo.html" class="explore-viewall">View all &gt;</a>
+    </div>
+    <div class="explore-menu">
+        <div class="menu-card" onclick="window.location='combo.html'">
+            <img src="images/combo.jpg" alt="Combos">
+            <span>Combos</span>
+        </div>
+        <div class="menu-card" onclick="window.location='menu.html#veg-pizza'">
+            <img src="images/veg pizza.avif" alt="Veg Pizza">
+            <span>Veg Pizza</span>
+        </div>
+        <div class="menu-card" onclick="window.location='menu.html#nonveg-pizza'">
+            <img src="images/veg pizza.avif" alt="Non-veg Pizza">
+            <span>Non-veg Pizza</span>
+        </div>
+        <div class="menu-card" onclick="window.location='menu.html#sandwich'">
+            <img src="images/Club Sandwich.jpg" alt="Sandwich">
+            <span>Sandwich</span>
+        </div>
+        <div class="menu-card" onclick="window.location='menu.html#pasta'">
+            <img src="images/Red Sauce Paste.jpg" alt="Pasta">
+            <span>Pasta</span>
+        </div>
+        <div class="menu-card" onclick="window.location='menu.html#drinks'">
+            <img src="images/drinks.avif" alt="Drinks">
+            <span>Drinks</span>
+        </div>
+    </div>
+</div>
+
+<div style="height: 70px;"></div>
+
+<nav class="bottom-nav">
+    <a href="index.html" class="active">
+        <img src="images/menu.jpg" alt="Home">
+        OUTLET NAME
+    </a>
+    <a href="cart.html">
+        <img src="images/cart.jpg" alt="Cart">
+        Cart
+    </a>
+    <a href="menu.html">
+        <img src="images/menu.jpg" alt="Menu">
+        Menu
+    </a>
+    <a href="profile.html">
+        <img src="images/user.png" alt="Profile">
+        Profile
+    </a>
+</nav>
+
+<script>
+    // Sidebar logic
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+    });
+</script>
+
+</body>
+</html>

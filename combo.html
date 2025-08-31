@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Combo Offers | Delicious Bites</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #fffbe7 0%, #ffe0e0 100%);
+            margin: 0;
+            padding: 0;
+            color: #232526;
+        }
+        header {
+            background: #fff;
+            padding: 18px;
+            font-size: 1.3em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid #ffcc00;
+            background: #fff;
+            object-fit: cover;
+        }
+        .header-title {
+            flex: 1;
+            color: #232526;
+        }
+        .header-icons {
+            display: flex;
+            gap: 18px;
+        }
+        .header-icons img {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            transition: transform 0.2s;
+        }
+        .header-icons img:hover {
+            transform: scale(1.12) rotate(-8deg);
+        }
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 22px;
+            font-size: 2.2em;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            color: #ffcc00;
+            cursor: pointer;
+            z-index: 1202;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar-toggle:hover {
+            background: #ffcc00;
+            color: #232526;
+            transform: scale(1.08) rotate(-12deg);
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -290px;
+            width: 270px;
+            height: 100%;
+            background: rgba(30,30,40,0.92);
+            backdrop-filter: blur(14px);
+            box-shadow: -4px 0 32px rgba(0,0,0,0.25);
+            padding-top: 70px;
+            transition: right 0.4s cubic-bezier(.77,0,.18,1);
+            z-index: 1201;
+            border-top-left-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 18px 32px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.18em;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar a:hover {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+            color: #232526;
+            transform: translateX(-8px) scale(1.04);
+        }
+        .sidebar img {
+            width: 32px;
+            height: 32px;
+            margin-right: 18px;
+            filter: drop-shadow(0 2px 8px #ffcc0055);
+            transition: transform 0.3s;
+        }
+        .sidebar a:hover img {
+            transform: rotate(12deg) scale(1.15);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30,30,40,0.25);
+            backdrop-filter: blur(2px);
+            z-index: 1200;
+            transition: opacity 0.3s;
+        }
+        .overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        .combo-section {
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+        .combo-title {
+            font-size: 2em;
+            color: #ff6600;
+            font-weight: bold;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .combo-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+            justify-content: center;
+        }
+        .combo-card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 18px #ffcc0022;
+            width: 260px;
+            padding: 18px 16px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .combo-card:hover {
+            transform: scale(1.04) translateY(-6px);
+            box-shadow: 0 8px 32px #ffcc0033;
+        }
+        .combo-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 14px;
+            object-fit: cover;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px #ffcc0055;
+        }
+        .combo-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #232526;
+        }
+        .combo-desc {
+            color: #555;
+            font-size: 1em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .combo-price {
+            color: #2ecc71;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .order-btn {
+            background: linear-gradient(90deg, #ffcc00 0%, #ff6b6b 100%);
+            color: #232526;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 22px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .order-btn:hover {
+            background: #ff6600;
+            color: #fff;
+        }
+        @media (max-width: 700px) {
+            .combo-list { gap: 14px; }
+            .combo-card { width: 95vw; max-width: 340px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/menu.jpg" class="logo-img" alt="Logo">
+        <span class="header-title">Delicious Bites - Combo Offers</span>
+        <div class="header-icons">
+            <img src="images/search.jpg" alt="Search" title="Search">
+            <img src="images/user.png" alt="Profile" title="Profile">
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+    </header>
+
+<div class="sidebar" id="sidebar">
+    <a href="billing.html"><img src="images/bill.jpg" alt="Billing">Billing</a>
+    <a href="logout.html"><img src="images/logout.png" alt="Logout">Logout</a>
+    <a href="menu.html"><img src="images/menu.jpg" alt="Menu">Menu</a>
+</div>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="combo-section">
+        <div class="combo-title">Combo Offers</div>
+        <div class="combo-list">
+            <div class="combo-card">
+                <img src="images/combo1.avif" alt="Pizza Combo">
+                <div class="combo-name">Pizza & Drink Combo</div>
+                <div class="combo-desc">1 Medium Margherita Pizza + 1 Soft Drink (500ml)</div>
+                <div class="combo-price">₹299 <span style="color:#888;font-size:0.9em;text-decoration:line-through;">₹499</span></div>
+                <button class="order-btn" onclick="addComboToCart(1)">Order Now</button>
+            </div>
+            <div class="combo-card">
+                <img src="images/combo2.avif" alt="Sandwich Combo">
+                <div class="combo-name">Sandwich & Fries Combo</div>
+                <div class="combo-desc">Club Sandwich + French Fries + Cold Coffee</div>
+                <div class="combo-price">₹249 <span style="color:#888;font-size:0.9em;text-decoration:line-through;">₹399</span></div>
+                <button class="order-btn" onclick="addComboToCart(2)">Order Now</button>
+            </div>
+            <div class="combo-card">
+                <img src="images/combo3.jpg" alt="Pasta Combo">
+                <div class="combo-name">Pasta & Garlic Bread Combo</div>
+                <div class="combo-desc">Red Sauce Pasta + Garlic Bread + Lemonade</div>
+                <div class="combo-price">₹279 <span style="color:#888;font-size:0.9em;text-decoration:line-through;">₹429</span></div>
+                <button class="order-btn" onclick="addComboToCart(3)">Order Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar logic
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape") {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+            }
+        });
+
+        // Combo definitions
+        const combos = {
+            1: {
+                name: "Pizza & Drink Combo",
+                price: 299,
+                items: [
+                    { name: "Medium Margherita Pizza", qty: 1, price: 239 },
+                    { name: "Soft Drink (500ml)", qty: 1, price: 60 }
+                ]
+            },
+            2: {
+                name: "Sandwich & Fries Combo",
+                price: 249,
+                items: [
+                    { name: "Club Sandwich", qty: 1, price: 120 },
+                    { name: "French Fries", qty: 1, price: 69 },
+                    { name: "Cold Coffee", qty: 1, price: 60 }
+                ]
+            },
+            3: {
+                name: "Pasta & Garlic Bread Combo",
+                price: 279,
+                items: [
+                    { name: "Red Sauce Pasta", qty: 1, price: 179 },
+                    { name: "Garlic Bread", qty: 1, price: 60 },
+                    { name: "Lemonade", qty: 1, price: 40 }
+                ]
+            }
+        };
+
+        // Add combo to cart (localStorage 'order'), then go to cart page
+        function addComboToCart(comboId) {
+            const combo = combos[comboId];
+            if (!combo) return;
+            let order = JSON.parse(localStorage.getItem('order') || '[]');
+            // Option 1: Add as a single combo item
+            order.push({
+                name: combo.name,
+                price: combo.price,
+                qty: 1
+            });
+            // Option 2: Add all items separately (uncomment if you want this)
+            // combo.items.forEach(item => order.push(item));
+            localStorage.setItem('order', JSON.stringify(order));
+            // Redirect to cart page first
+            window.location = "cart.html";
+        }
+    </script>
+</body>
+</html>
